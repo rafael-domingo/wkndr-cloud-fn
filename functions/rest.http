@@ -1,0 +1,22 @@
+POST https://us-central1-wkndr-326514.cloudfunctions.net/yelpTripBuilder
+Content-Type: application/json
+
+{
+        "cityName": "New York City, NY",
+        "lat": "40.7128",
+        "lng": "-74.0060",
+        "autoBuild": "true",
+        "morning": "true",
+        "afternoon": "true",
+        "evening": "false",
+        "transportation": "DRIVING",
+        "coffee": "true",
+        "food": "true",
+        "shop": "true",
+        "drink": "true",
+        "thrifting": "false",
+        "landmarks": "false",
+        "zoos": "false",
+        "museums": "false",
+        "hiking": "false"
+}

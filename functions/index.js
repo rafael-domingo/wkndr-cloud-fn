@@ -33,34 +33,35 @@ exports.yelpAutoComplete = functions.https.onRequest((req, res) => {
 })
 
 exports.yelpTripBuilder = functions.https.onRequest( async (req, res) => {
+    console.log(req.body)
+    // store request body in request object 
+    // default to false for boolean checks
     const request = {
-        cityName: '',
+        cityName: req.body.cityName,
         coordinates: {
-            lat: 34.0522,
-            lng: -118.2437
+            lat: req.body.lat,
+            lng: req.body.lng
         },
-        autoBuild: false,
+        autoBuild: req.body.autoBuild,
         time: {
-            morning: true,
-            afternoon: true,
-            evening: true,
+            morning: req.body.morning,
+            afternoon: req.body.afternoon,
+            evening: req.body.evening,
         },
-        transportation: 'DRIVING',
+        transportation: req.body.transportation,
         activities: {
-            coffee: true,
-            food: true,
-            shop: true, 
-            drink: true, 
-            thrifting: true, 
-            landmarks: false, 
-            zoos: true, 
-            museums: true,
-            hiking: true
+            coffee: req.body.coffee,
+            food: req.body.food,
+            shop: req.body.shop, 
+            drink: req.body.drink, 
+            thrifting: req.body.thrifting, 
+            landmarks: req.body.landmarks, 
+            zoos: req.body.zoos, 
+            museums: req.body.museums,
+            hiking: req.body.hiking
         }
     }
-    const coordinates = request.coordinates
-    const activities = request.activities
-    const time = request.time
+    console.log(request)
     // Configure the Unix times to use when calling Yelp API to make sure businesses are open on Saturday 
     // Morning = 9AM(0900), Afternoon = 12PM(1200), Evening, 7PM(1900)
     const morningDate = new Date(Date.now()); // create morning date object
@@ -129,13 +130,14 @@ exports.yelpTripBuilder = functions.https.onRequest( async (req, res) => {
                 // Call Yelp API
                 yelpClient.search({
                     term: activity,
-                    latitude: 34.0522,
-                    longitude: -118.2437,
+                    latitude: request.coordinates.lat,
+                    longitude: request.coordinates.lng,
                     sort_by: 'rating',                    
                     open_at: itineraryObject[activity]
                 }).then(response => {             
                     // TODO -- add logic to select random business
                     const business = response.jsonBody.businesses[0] 
+                    console.log(business)
                     // determine which array to add it to
                     switch (itineraryObject[activity]) {
                         case morningTime:
@@ -158,7 +160,7 @@ exports.yelpTripBuilder = functions.https.onRequest( async (req, res) => {
                     }
                 })
             }                   
-            console.log(`${activity}: ${itineraryObject[activity]}`)
+            // console.log(`${activity}: ${itineraryObject[activity]}`)
             // call timer to rate-limit API call
             await timer(1000);
         }
@@ -166,34 +168,35 @@ exports.yelpTripBuilder = functions.https.onRequest( async (req, res) => {
         return tripArray
     }
     const responseObject = await iterateObject(itineraryObject)
+    console.log(responseObject)
     res.send(responseObject)
 })
 
-exports.time = functions.https.onRequest((req, res) => {
-    const timeOffset = -420 * 60000 // offset in minutes * conversion rate to milliseconds
-    const morningDate = new Date(Date.now());
-    const afternoonDate = new Date(Date.now());
-    const eveningDate = new Date(Date.now()); 
-    console.log(morningDate.toUTCString())
-    // find what day of the week it is
-    const day = morningDate.getUTCDay()
-    const dayToAdd = 6 - day // figure out how many days to get to Saturday
-    const newDate = morningDate.getUTCDate() + dayToAdd // what calendar day to set
+// exports.time = functions.https.onRequest((req, res) => {
+//     const timeOffset = -420 * 60000 // offset in minutes * conversion rate to milliseconds
+//     const morningDate = new Date(Date.now());
+//     const afternoonDate = new Date(Date.now());
+//     const eveningDate = new Date(Date.now()); 
+//     console.log(morningDate.toUTCString())
+//     // find what day of the week it is
+//     const day = morningDate.getUTCDay()
+//     const dayToAdd = 6 - day // figure out how many days to get to Saturday
+//     const newDate = morningDate.getUTCDate() + dayToAdd // what calendar day to set
 
-    morningDate.setUTCDate(newDate)
-    afternoonDate.setUTCDate(newDate)
-    eveningDate.setUTCDate(newDate)
+//     morningDate.setUTCDate(newDate)
+//     afternoonDate.setUTCDate(newDate)
+//     eveningDate.setUTCDate(newDate)
 
     
-    console.log(morningDate.toUTCString())
+//     console.log(morningDate.toUTCString())
 
-    morningDate.setUTCHours(9)
-    afternoonDate.setUTCHours(12)
-    eveningDate.setUTCHours(19)
-    console.log(morningDate.toUTCString())
-    console.log(morningDate.getTime() - timeOffset) // converts to Unix time in milliseconds and convert to timezone
-    console.log((morningDate.getTime()- (morningDate.getTime()%1000))/1000) // convert to seconds
-    console.log(afternoonDate.toUTCString())
-    console.log(eveningDate.toUTCString())
-    res.send('time api was called')
-})
+//     morningDate.setUTCHours(9)
+//     afternoonDate.setUTCHours(12)
+//     eveningDate.setUTCHours(19)
+//     console.log(morningDate.toUTCString())
+//     console.log(morningDate.getTime() - timeOffset) // converts to Unix time in milliseconds and convert to timezone
+//     console.log((morningDate.getTime()- (morningDate.getTime()%1000))/1000) // convert to seconds
+//     console.log(afternoonDate.toUTCString())
+//     console.log(eveningDate.toUTCString())
+//     res.send('time api was called')
+// })
