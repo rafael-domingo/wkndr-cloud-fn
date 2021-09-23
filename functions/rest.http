@@ -20,3 +20,29 @@ Content-Type: application/json
         "museums": "false",
         "hiking": "false"
 }
+
+###
+POST https://us-central1-wkndr-326514.cloudfunctions.net/yelpAutoComplete
+Content-Type: application/json
+
+{
+        "term": "popeye"
+}
+
+### 
+POST https://us-central1-wkndr-326514.cloudfunctions.net/yelpSearch
+Content-Type: application/json
+
+{
+        "term": "popeye",
+        "lat": "40.7128",
+        "lng": "-74.0060"
+}
+
+###
+POST http://localhost:5001/wkndr-326514/us-central1/yelpAutoComplete
+Content-Type: application/json
+
+{
+        "term": "cof"
+}

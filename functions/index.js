@@ -12,23 +12,21 @@ const yelpClient = yelp.client('api-key');
 exports.yelpSearch = functions.https.onRequest((req, res) =>  {
 
     yelpClient.search({
-        term: 'pizza',
-        latitude: 34.0522,
-        longitude: -118.2437,
-        sort_by: 'rating',
-        // open_now: true
-        open_at: 1632582000
+        term: req.body.term,
+        latitude: req.body.lat,
+        longitude: req.body.lng,
+        sort_by: 'rating',        
     }).then(response => {
-        console.log(response.jsonBody.businesses[0])
-        res.send(response.jsonBody.businesses[0])
+        console.log(response.jsonBody.businesses)
+        res.send(response.jsonBody.businesses)
     })
 })
 
 exports.yelpAutoComplete = functions.https.onRequest((req, res) => {
     yelpClient.autocomplete({
-        text: 'cof'
+        text: req.body.term
     }).then(response => {
-        res.json(response.jsonBody)
+        res.json(response.jsonBody.terms)
     })
 })
 
