@@ -68,9 +68,13 @@ exports.yelpTripBuilder = functions.https.onRequest( async (req, res) => {
 
     // determine how many days to Saturday
     const day = morningDate.getUTCDay() // find what day of the week it is
-    const dayToAdd = 6 - day // figure out how many days to get to Saturday
+    
+    const dayToAdd = 0 // temp fix for API open_at bug
+    // BUG--- Yelp API doesn't let you look up times >1 week out, figure out how to fix
+    // const dayToAdd = 6 - day // figure out how many days to get to Saturday
+
     const newDate = morningDate.getUTCDate() + dayToAdd // what calendar day to set
-    const timeOffset = -420 * 60000 // offset in minutes * conversion rate to milliseconds
+    const timeOffset =req.body.utcOffset * 60000 // offset in minutes * conversion rate to milliseconds
   
     // set dates to the next Saturday
     morningDate.setUTCDate(newDate) 
@@ -135,7 +139,7 @@ exports.yelpTripBuilder = functions.https.onRequest( async (req, res) => {
                 }).then(response => {             
                     // TODO -- add logic to select random business
                     const business = response.jsonBody.businesses[0] 
-                    console.log(business)
+                    // console.log(business)
                     // determine which array to add it to
                     switch (itineraryObject[activity]) {
                         case morningTime:
@@ -157,6 +161,7 @@ exports.yelpTripBuilder = functions.https.onRequest( async (req, res) => {
                             break;
                     }
                 })
+                .catch(error => console.log(error))
             }                   
             // console.log(`${activity}: ${itineraryObject[activity]}`)
             // call timer to rate-limit API call

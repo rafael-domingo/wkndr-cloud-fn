@@ -1,4 +1,4 @@
-POST https://us-central1-wkndr-326514.cloudfunctions.net/yelpTripBuilder
+POST http://localhost:5001/wkndr-326514/us-central1/yelpTripBuilder
 Content-Type: application/json
 
 {
@@ -18,7 +18,8 @@ Content-Type: application/json
         "landmarks": "false",
         "zoos": "false",
         "museums": "false",
-        "hiking": "false"
+        "hiking": "false",
+        "utcOffset": "-240"
 }
 
 ###
