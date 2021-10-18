@@ -9,6 +9,24 @@ const yelpClient = yelp.client('api-key');
 //   response.send("Hello from Firebase!");
 // });
 
+exports.yelpDetail = functions.https.onRequest((req, res) => {
+    yelpClient.business(req.body.id)
+    .then(response => {
+        let detail = response.jsonBody;
+        yelpClient.reviews(req.body.id)
+        .then(response => {
+            let reviews = response.jsonBody.reviews;
+            const responseBody = {
+                detail: detail,
+                reviews: reviews,
+            }
+            res.send(responseBody);
+        }).catch((error) => console.log(error))      
+    }).catch((error) => console.log(error))    
+})
+
+
+
 exports.yelpSearch = functions.https.onRequest((req, res) =>  {
 
     yelpClient.search({
@@ -69,7 +87,7 @@ exports.yelpTripBuilder = functions.https.onRequest( async (req, res) => {
     // determine how many days to Saturday
     const day = morningDate.getUTCDay() // find what day of the week it is
     
-    const dayToAdd = 0 // temp fix for API open_at bug
+    const dayToAdd = -2 // temp fix for API open_at bug
     // BUG--- Yelp API doesn't let you look up times >1 week out, figure out how to fix
     // const dayToAdd = 6 - day // figure out how many days to get to Saturday
 
