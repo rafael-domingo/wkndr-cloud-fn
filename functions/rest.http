@@ -1,4 +1,4 @@
-POST http://localhost:5001/wkndr-326514/us-central1/yelpTripBuilder
+POST https://us-central1-wkndr-326514.cloudfunctions.net//yelpTripBuilder
 Content-Type: application/json
 
 {
@@ -46,4 +46,12 @@ Content-Type: application/json
 
 {
         "term": "cof"
+}
+
+###
+POST https://us-central1-wkndr-326514.cloudfunctions.net/yelpDetail
+Content-Type: application/json
+
+{
+        "id": "NlT-6hFP0_6hPo36AW2lIA"
 }
