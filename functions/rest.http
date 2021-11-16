@@ -1,24 +1,24 @@
-POST https://us-central1-wkndr-326514.cloudfunctions.net//yelpTripBuilder
+POST https://us-central1-wkndr-326514.cloudfunctions.net/yelpTripBuilder
 Content-Type: application/json
 
 {
-        "cityName": "New York City, NY",
-        "lat": "40.7128",
-        "lng": "-74.0060",
+        "cityName": "Baton Rouge, LA, USA",
+        "lng": "-91.18714659999999",
+        "lat": "30.4514677",
         "autoBuild": "true",
-        "morning": "true",
-        "afternoon": "true",
-        "evening": "false",
+        "morning": true,
+        "afternoon": true,
+        "evening": true,
         "transportation": "DRIVING",
-        "coffee": "true",
-        "food": "true",
-        "shop": "true",
-        "drink": "true",
-        "thrifting": "false",
-        "landmarks": "false",
-        "zoos": "false",
-        "museums": "false",
-        "hiking": "false",
+        "coffee": true,
+        "food": true,
+        "shop": false,
+        "drink": false,
+        "thrifting": false,
+        "landmarks": false,
+        "zoos": false,
+        "museums": false,
+        "hiking": false,
         "utcOffset": "-240"
 }
 

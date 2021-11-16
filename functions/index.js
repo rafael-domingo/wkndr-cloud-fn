@@ -1,6 +1,6 @@
 const functions = require("firebase-functions");
 const yelp = require('yelp-fusion');
-const yelpClient = yelp.client('api-key');
+const yelpClient = yelp.client('yelp-api-key');
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
@@ -87,7 +87,7 @@ exports.yelpTripBuilder = functions.https.onRequest( async (req, res) => {
     // determine how many days to Saturday
     const day = morningDate.getUTCDay() // find what day of the week it is
     
-    const dayToAdd = -2 // temp fix for API open_at bug
+    const dayToAdd = 1 // temp fix for API open_at bug -- will just look up times on current day 
     // BUG--- Yelp API doesn't let you look up times >1 week out, figure out how to fix
     // const dayToAdd = 6 - day // figure out how many days to get to Saturday
 
@@ -107,7 +107,7 @@ exports.yelpTripBuilder = functions.https.onRequest( async (req, res) => {
     const afternoonTime = ((afternoonDate.getTime() - timeOffset) - ((afternoonDate.getTime() - timeOffset)%1000))/1000
     const eveningTime = ((eveningDate.getTime() - timeOffset) - ((eveningDate.getTime() - timeOffset)%1000))/1000
 
-    // Figure out time of the day to set for activities
+    // Figure out time of the day to set for activities    
     const coffee = request.activities.coffee ? (request.time.morning ? (morningTime) : (request.time.afternoon ? afternoonTime : eveningTime)) : null
     const drink = request.activities.drink ? (request.time.evening ? (eveningTime) : (request.time.afternoon ? afternoonTime : morningTime)) : null
     const shop = request.activities.shop ? (request.time.afternoon ? (afternoonTime) : (request.time.evening ? eveningTime : morningTime)) : null
@@ -116,7 +116,7 @@ exports.yelpTripBuilder = functions.https.onRequest( async (req, res) => {
     const zoos = request.activities.zoos ? (request.time.afternoon ? (afternoonTime) : (request.time.morning ? morningTime : eveningTime)) : null
     const museums = request.activities.museums ? (request.time.afternoon ? (afternoonTime) : (request.time.morning ? morningTime : eveningTime)) : null
     const hiking = request.activities.hiking ? (request.time.morning ? (morningTime) : (request.time.afternoon ? afternoonTime : eveningTime)) : null
-
+    
     // Figure out what meals to suggest if food is on intinerary
     const breakfast = request.activities.food ? (request.time.morning ? (morningTime) : null) : null
     const lunch = request.activities.food ? (request.time.afternoon ? (afternoonTime) : null) : null
@@ -145,8 +145,10 @@ exports.yelpTripBuilder = functions.https.onRequest( async (req, res) => {
     const timer = ms => new Promise(res => setTimeout(res, ms))
     // iterate over activities to call Yelp API 
     const iterateObject = async (itineraryObject) => {
+        const yelpIds = []
         for (const activity in itineraryObject) {
             if (itineraryObject[activity] !== null) {
+                console.log(itineraryObject[activity])
                 // Call Yelp API
                 yelpClient.search({
                     term: activity,
@@ -154,10 +156,18 @@ exports.yelpTripBuilder = functions.https.onRequest( async (req, res) => {
                     longitude: request.coordinates.lng,
                     sort_by: 'rating',                    
                     open_at: itineraryObject[activity]
-                }).then(response => {             
-                    // TODO -- add logic to select random business
-                    const business = response.jsonBody.businesses[0] 
-                    // console.log(business)
+                }).then(response => {                          
+                    var duplicate = true                    
+                    do {                        
+                        const int = Math.floor(Math.random() * 10) // pick random from top 10 businesses
+                        var business = response.jsonBody.businesses[int] 
+                        // check if business has already been selected
+                        if (!yelpIds.includes(business.id)) {
+                            duplicate = false
+                            yelpIds.push(business.id)
+                        }
+                    } while (duplicate);                    
+            
                     // determine which array to add it to
                     switch (itineraryObject[activity]) {
                         case morningTime:
